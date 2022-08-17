@@ -4,9 +4,10 @@ Sample Helidon MP project that includes multiple REST operations.
 
 ## Build and run
 
-With JDK11+
+With JDK16+ by overriding default Main method.
 ```bash
-mvn package
+export APP_GREETING="EnvironmentVariablefromJAR"
+mvn package -D skipTest=true
 java -jar target/helidon-quickstart-mp.jar
 ```
 
@@ -14,7 +15,7 @@ java -jar target/helidon-quickstart-mp.jar
 
 ```
 curl -X GET http://localhost:8080/greet
-{"message":"Hello World!"}
+{"message":"EnvironmentVariablefromJAR World!"}
 
 curl -X GET http://localhost:8080/greet/Joe
 {"message":"Hello Joe!"}

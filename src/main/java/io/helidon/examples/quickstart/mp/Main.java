@@ -14,13 +14,26 @@ public final class Main {
         System.out.println("http://localhost:" + server.port() + "/greet");
     }
 
+//    static Server startServer() {
+//        return Server.builder()
+//                .config(buildConfig())
+//                .build()
+//                .start();
+//
+//    }
+//
+//    private static Config buildConfig() {
+//        return Config.builder().disableEnvironmentVariablesSource()
+//                .sources(
+//                        classpath("META-INF/mp-config.yaml"),
+//                        classpath("META-INF/microprofile-config.properties"))
+//                .build();
+//    }
     static Server startServer() {
-        return Server.builder()
-                .config(buildConfig())
-                .build()
-                .start();
-
-    }
+    return Server.builder()
+            .build()
+            .start();
+}
 
     private static Config buildConfig() {
         return Config.builder().disableEnvironmentVariablesSource()
@@ -29,6 +42,7 @@ public final class Main {
                         classpath("META-INF/microprofile-config.properties"))
                 .build();
     }
+
 
 
 }
