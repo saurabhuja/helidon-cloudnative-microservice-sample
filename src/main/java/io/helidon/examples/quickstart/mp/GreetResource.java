@@ -23,6 +23,8 @@ import org.eclipse.microprofile.openapi.annotations.parameters.RequestBody;
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponses;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
+import org.eclipse.microprofile.metrics.annotation.Counted;
+import org.eclipse.microprofile.metrics.annotation.Timed;
 
 /**
  * A simple JAX-RS resource to greet you. Examples:
@@ -66,6 +68,8 @@ public class GreetResource {
      */
     @GET
     @Produces(MediaType.APPLICATION_JSON)
+    @Timed (name="my-time-metrics", absolute = true)
+    @Counted(name = "my-mp-metrics", absolute = true)
     public JsonObject getDefaultMessage() {
         return createResponse("World");
     }
