@@ -1,8 +1,11 @@
+// Implement /outbound as path
 
 package io.helidon.examples.quickstart.mp;
 
+
 import java.util.Collections;
 
+import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.json.Json;
 import javax.json.JsonBuilderFactory;
@@ -16,6 +19,8 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import org.eclipse.microprofile.metrics.annotation.Counted;
+import org.eclipse.microprofile.metrics.annotation.Timed;
 import org.eclipse.microprofile.openapi.annotations.enums.SchemaType;
 import org.eclipse.microprofile.openapi.annotations.media.Content;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
@@ -38,8 +43,9 @@ import org.eclipse.microprofile.rest.client.inject.RestClient;
  *
  * The message is returned as a JSON object.
  */
-@Path("/greet")
-public class GreetResource {
+@Path("/outbound")
+@RequestScoped
+public class GreetResource1 {
 
     private static final JsonBuilderFactory JSON = Json.createBuilderFactory(Collections.emptyMap());
 
@@ -55,7 +61,7 @@ public class GreetResource {
      * @param greetingConfig the configured greeting message
      */
     @Inject
-    public GreetResource(GreetingProvider greetingConfig) {
+    public GreetResource1(GreetingProvider greetingConfig) {
         this.greetingProvider = greetingConfig;
     }
 
@@ -66,6 +72,7 @@ public class GreetResource {
      */
     @GET
     @Produces(MediaType.APPLICATION_JSON)
+
     public JsonObject getDefaultMessage() {
         return createResponse("World");
     }
@@ -82,55 +89,12 @@ public class GreetResource {
     public JsonObject getMessage(@PathParam("name") String name) {
         return createResponse(name);
     }
-
-    /**
-     * Set the greeting to use in future messages.
-     *
-     * @param jsonObject JSON containing the new greeting
-     * @return {@link Response}
-     */
-    @Path("/greeting")
-    @PUT
-    @Consumes(MediaType.APPLICATION_JSON)
-    @Produces(MediaType.APPLICATION_JSON)
-    @RequestBody(name = "greeting",
-            required = true,
-            content = @Content(mediaType = "application/json",
-                    schema = @Schema(type = SchemaType.OBJECT, requiredProperties = { "greeting" })))
-    @APIResponses({
-            @APIResponse(name = "normal", responseCode = "204", description = "Greeting updated"),
-            @APIResponse(name = "missing 'greeting'", responseCode = "400",
-                    description = "JSON did not contain setting for 'greeting'")})
-    public Response updateGreeting(JsonObject jsonObject) {
-
-        if (!jsonObject.containsKey("greeting")) {
-            JsonObject entity = JSON.createObjectBuilder()
-                    .add("error", "No greeting provided")
-                    .build();
-            return Response.status(Response.Status.BAD_REQUEST).entity(entity).build();
-        }
-
-        String newGreeting = jsonObject.getString("greeting");
-
-        greetingProvider.setMessage(newGreeting);
-        return Response.status(Response.Status.NO_CONTENT).build();
-    }
-
     private JsonObject createResponse(String who) {
         String msg = String.format("%s %s!", greetingProvider.getMessage(), who);
+
         return JSON.createObjectBuilder()
                 .add("message", msg)
                 .build();
-    }
-
-    @Inject
-    @RestClient
-    GreetRestClient restClient;
-
-    @GET
-    @Path("/outbound/{name}")
-    public JsonObject outbound(@PathParam("name") String name) {
-        return restClient.getMessage(name);
     }
 
 }
